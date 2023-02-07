@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePosts } from './hooks/usePosts';
 import PostList from './components/PostList';
-import Mybutton from './components/UI/buttons/Mybutton';
 import PostForm from './components/PostForm';
 import PostFilter from './components/PostFilter';
+import Mybutton from './components/UI/buttons/Mybutton';
 import Mymodal from './components/UI/MyModal/Mymodal';
+import axios from 'axios';
 import './syles/App.css'
+import PostService from './API/PostService';
+import Loader from './components/UI/Loader/Loader';
+import { useFetching } from './hooks/useFetchig';
 
 function App() {
 
@@ -13,6 +17,14 @@ function App() {
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [modal, setModal] = useState(false);
   const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query);
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async() => {
+    const posts = await PostService.getAll();
+    setPosts(posts);
+  })
+
+  useEffect(() => {
+    fetchPosts();
+  }, [filter])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -25,6 +37,7 @@ function App() {
 
   return (
     <div className="App">
+      <button onClick={fetchPosts}>GET POST</button>
       <Mybutton style={{ marginTop: '30px' }} onClick={() => setModal(true)}>
         Создать пост
       </Mybutton>
@@ -37,7 +50,14 @@ function App() {
         filter={filter}
         setFilter={setFilter}
       />
-      <PostList remove={removePost} posts={sortedAndSearchPosts} title='Список постов' />
+      {postError &&
+        <h1>Произошла ошибка ${postError}</h1>
+      }
+      {isPostsLoading
+        ? <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><Loader/></div>
+        : <PostList remove={removePost} posts={sortedAndSearchPosts} title='Список постов' />
+      }
+
     </div>
   );
 }
