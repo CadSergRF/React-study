@@ -6,16 +6,19 @@ import PostList from './components/PostList';
 import Mybutton from './components/UI/buttons/Mybutton';
 import MyInput from './components/UI/inputs/MyInput';
 import PostForm from './components/PostForm';
+import Myselect from './components/UI/select/Myselect';
 
 function App() {
 
   const [posts, setPosts] = useState(
     [
-      { id: 1, title: 'Javascript', body: 'Description' },
-      { id: 2, title: 'Python', body: 'Description' },
-      { id: 3, title: 'Basic', body: 'Description' }
+      { id: 1, title: 'aa', body: 'hh' },
+      { id: 2, title: 'vv', body: 'aa' },
+      { id: 3, title: 'kk', body: 'pp' }
     ]
   );
+
+  const [selectedSort, setSelectedSort] = useState('')
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -25,9 +28,29 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id))
   }
 
+  const sortPosts = (sort) => {
+    setSelectedSort(sort)
+    // console.log(sort)
+    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
+  }
+
   return (
     <div className="App">
       <PostForm create={createPost} />
+      <hr style={{margin: '15px 0'}}/>
+      <div>
+        <Myselect
+          value={selectedSort}
+          onChange={sortPosts}
+          defaultOption='Сортировка по...'
+          options={[
+            {value: 'title', name: 'по названию'},
+            {value: 'body', name: 'по описанию'}
+
+          ]}
+        />
+      </div>
+
       {posts.length
         ?
         <PostList remove={removePost} posts={posts} title='Список постов' />
