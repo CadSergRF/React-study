@@ -5,6 +5,7 @@ import PostItem from './components/PostItem';
 import PostList from './components/PostList';
 import Mybutton from './components/UI/buttons/Mybutton';
 import MyInput from './components/UI/inputs/MyInput';
+import PostForm from './components/PostForm';
 
 function App() {
 
@@ -16,32 +17,14 @@ function App() {
     ]
   );
 
-  const [post, setPost] = useState({title:'', body:''})
-
-  const addNewPost = (e) => {
-    e.preventDefault();
-
-    setPosts([...posts, {...post, id: Date.now()}])
-    setPost({title:'', body:''})
+  const createPost = (newPost) => {
+    setPosts([...posts, newPost])
   }
 
   return (
     <div className="App">
-      <form>
-        <MyInput 
-        type='text' 
-        placeholder='Название поста' 
-        value={post.title} 
-        onChange={e => setPost({...post, title: e.target.value})} 
-        />
-        <MyInput 
-        type='text' 
-        placeholder='Описание поста' 
-        value={post.body} 
-        onChange={e => setPost({...post, body: e.target.value})} 
-        />
-        <Mybutton onClick={addNewPost}>Создать пост</Mybutton>
-      </form>
+
+      <PostForm create={createPost}/>
 
       <PostList posts={posts} title='Список постов' />
 
